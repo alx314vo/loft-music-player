@@ -7,13 +7,13 @@
     <style>
         @font-face {
             font-family: 'Futura PT';
-            src: url('FuturaPTBook.otf') format('opentype');
+            src: url('fonts/FuturaPTBook.otf') format('opentype');
             font-weight: normal;
         }
         
         @font-face {
             font-family: 'Futura PT';
-            src: url('FuturaPTDemi.otf') format('opentype');
+            src: url('fonts/FuturaPTDemi.otf') format('opentype');
             font-weight: 600;
         }
         
@@ -281,7 +281,7 @@
 </head>
 <body>
     <div class="background">
-        <img src="birthday.gif" alt="Party Background">
+        <img src="images/birthday.gif" alt="Party Background">
     </div>
     
     <div class="hover-area"></div>
@@ -298,19 +298,19 @@
     <div class="player-container">
         <div class="player-controls">
             <button class="player-btn" id="shuffle-btn">
-                <img src="shuffle.svg" alt="Shuffle">
+                <img src="icons/shuffle.svg" alt="Shuffle">
             </button>
             <button class="player-btn" id="prev-btn">
-                <img src="previous.svg" alt="Previous">
+                <img src="icons/previous.svg" alt="Previous">
             </button>
             <button class="player-btn play-btn" id="play-btn">
-                <img src="play.svg" alt="Play">
+                <img src="icons/play.svg" alt="Play">
             </button>
             <button class="player-btn" id="next-btn">
-                <img src="next.svg" alt="Next">
+                <img src="icons/next.svg" alt="Next">
             </button>
             <button class="player-btn" id="repeat-btn">
-                <img src="repeat.svg" alt="Repeat">
+                <img src="icons/repeat.svg" alt="Repeat">
             </button>
         </div>
         <div class="progress-container" id="progressContainer">
@@ -362,7 +362,7 @@
             }
             
             // Создаем список треков из всех MP3 файлов в папке
-            tracks = ['1.mp3', '2.mp3', '3.mp3', '4.mp3', '5.mp3', '6.mp3'].map(file => ({
+            tracks = availableTracks.map(file => ({
                 title: file.replace('.mp3', ''),
                 file: file,
                 artist: 'Неизвестный исполнитель',
@@ -414,29 +414,26 @@ async function loadTrackMetadata() {
         
         // Проверяем какие треки доступны
         async function checkAvailableTracks() {
-            availableTracks = ['1.mp3', '2.mp3', '3.mp3', '4.mp3', '5.mp3', '6.mp3'];
-            
+            availableTracks = [];
+            let i = 1;
+            while (true) {
+                const exists = await checkTrackExists(i);
+                if (!exists) break;
+                availableTracks.push(`${i}.mp3`);
+                i++;
+            }
             // Обновляем статус
             trackList.innerHTML = `<div class="loading">Найдено ${availableTracks.length} треков, загружаем метаданные...</div>`;
         }
         
         // Проверяет существует ли трек
-        function checkTrackExists(index) {
+        async function checkTrackExists(index) {
             return new Promise((resolve) => {
                 const testAudio = new Audio();
                 testAudio.src = `${index}.mp3`;
-                
-                testAudio.addEventListener('loadedmetadata', () => {
-                    availableTracks.push(index);
-                    resolve();
-                });
-                
-                testAudio.addEventListener('error', () => {
-                    resolve();
-                });
-                
-                // Таймаут на случай если события не сработают
-                setTimeout(resolve, 500);
+                testAudio.addEventListener('loadedmetadata', () => resolve(true));
+                testAudio.addEventListener('error', () => resolve(false));
+                setTimeout(() => resolve(false), 500);
             });
         }
         
@@ -467,10 +464,10 @@ async function loadTrackMetadata() {
         function togglePlay() {
             if (isPlaying) {
                 audioPlayer.pause();
-                if (playBtn.innerHTML) playBtn.innerHTML = '<img src="play.svg" alt="Play">';
+                if (playBtn.innerHTML) playBtn.innerHTML = '<img src="icons/play.svg" alt="Play">';
             } else {
                 audioPlayer.play().then(() => {
-                    if (playBtn.innerHTML) playBtn.innerHTML = '<img src="pause.svg" alt="Pause">';
+                    if (playBtn.innerHTML) playBtn.innerHTML = '<img src="icons/pause.svg" alt="Pause">';
                 }).catch(e => {
                     console.error('Ошибка воспроизведения:', e);
                     playNextTrack();
