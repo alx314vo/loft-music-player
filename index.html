@@ -351,8 +351,7 @@
         
         // Инициализация плеера
         async function initPlayer() {
-            console.log('Checking available tracks...');
-trackList.innerHTML = '<div class="loading">Проверяем доступные треки...</div>';
+            trackList.innerHTML = '<div class="loading">Проверяем доступные треки...</div>';
             
             // Проверяем какие треки доступны
             await checkAvailableTracks();
@@ -374,8 +373,7 @@ trackList.innerHTML = '<div class="loading">Проверяем доступны�
             await loadTrackMetadata();
             
             originalTracksOrder = [...tracks];
-            console.log('Rendering playlist...');
-renderPlaylist();
+            renderPlaylist();
             loadTrack(currentTrackIndex);
             
             // Обработчики событий
@@ -399,23 +397,12 @@ renderPlaylist();
         // Function to load track metadata
 async function loadTrackMetadata() {
     try {
-        // Start playing first track while loading metadata for others
-        if (tracks.length > 0) {
-            loadTrack(0);
-        }
-
-        // Load metadata in background
         for (let i = 0; i < tracks.length; i++) {
             const track = tracks[i];
             const audio = new Audio(track.file);
             await new Promise((resolve) => {
                 audio.addEventListener('loadedmetadata', () => {
                     track.duration = audio.duration;
-                    console.log(`Loaded metadata for track: ${track.file}`);
-                    // If current track is playing, update duration display
-                    if (i === currentTrackIndex) {
-                        updateTimeDisplay();
-                    }
                     resolve();
                 });
             });
@@ -433,12 +420,10 @@ async function loadTrackMetadata() {
                 const exists = await checkTrackExists(i);
                 if (!exists) break;
                 availableTracks.push(`${i}.mp3`);
-console.log(`Found track: ${i}.mp3`);
                 i++;
             }
             // Обновляем статус
-            console.log(`Found ${availableTracks.length} tracks, loading metadata...`);
-trackList.innerHTML = `<div class="loading">Найдено ${availableTracks.length} треков, загружаем метаданные...</div>`;
+            trackList.innerHTML = `<div class="loading">Найдено ${availableTracks.length} треков, загружаем метаданные...</div>`;
         }
         
         // Проверяет существует ли трек
@@ -539,8 +524,7 @@ trackList.innerHTML = `<div class="loading">Найдено ${availableTracks.len
                 );
             }
             
-            console.log('Rendering playlist...');
-renderPlaylist();
+            renderPlaylist();
         }
         
         // Переключение loop
